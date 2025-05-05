@@ -51,17 +51,19 @@ router.post("/", async (req, res) => {
       assignedBy: assigner ? assigner._id : null,
       createdBy: creator._id,
     });
-
+    
     if (assignee) {
-      await Notification.create({
+      const notification = await Notification.create({
         recipient: assignee._id,
         task: task._id,
         message: `You have been assigned to '${task.title}'`,
       });
-
+    
       await User.findByIdAndUpdate(assignee._id, {
         $addToSet: { assignedTasks: task._id },
       });
+    
+      global.io.to(assignee._id.toString()).emit("newNotification", notification);
     }
 
     res.status(201).json(task);
@@ -134,20 +136,27 @@ router.put("/:id", async (req, res) => {
   try {
     const updateData = { ...req.body };
 
+    const task = await Task.findById(req.params.id);
+    if (!task) return res.status(404).json({ error: "Task not found" });
+
     // Resolve assignedTo only if it's provided
     if (req.body.hasOwnProperty("assignedTo") && req.body.assignedTo) {
       const assignee = await getUserByUID(req.body.assignedTo);
       updateData.assignedTo = assignee._id;
 
-      await Notification.create({
+      // Then create notification
+      const notification = await Notification.create({
         recipient: assignee._id,
-        task: req.params.id,
-        message: `You have been assigned to '${req.body.title || 'a task'}'`,
+        task: task._id,
+        message: `You have been assigned to '${task.title}'`,
       });
 
+    
       await User.findByIdAndUpdate(assignee._id, {
         $addToSet: { assignedTasks: req.params.id },
       });
+    
+      global.io.to(assignee._id.toString()).emit("newNotification", notification);
     }
 
     // Resolve assignedBy only if provided

@@ -1,16 +1,56 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import "../styles/Navbar.css";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
+import io from "socket.io-client";
+
+const socket = io("http://localhost:5000", {
+  transports: ["websocket"],
+  autoConnect: false,
+});
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  
+  useEffect(() => {
+    console.log("User changed:", user);
+  }, [user]);  
+  
+  useEffect(() => {
+    if (!user) return;
+  
+    console.log("User object:", user); // Log user object to inspect its properties
+  
+    const userId = user.id || user.uid;
+    if (!userId) {
+      console.error("User ID is not available. Cannot connect to socket.");
+      return;
+    }
+  
+    socket.connect();
+    socket.emit("join", userId);
+  
+    fetch(`http://localhost:5000/api/notifications/${userId}`)
+      .then((res) => res.json())
+      .then((data) => setNotifications(data))
+      .catch((error) => console.error("Failed to fetch notifications:", error));
+  
+    const handleNewNotif = (notif) => {
+      setNotifications((prev) => [notif, ...prev]);
+    };
+  
+    socket.on("newNotification", handleNewNotif);
+  
+    return () => {
+      socket.off("newNotification", handleNewNotif);
+      socket.disconnect();
+    };
+  }, [user]);  
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
     <nav className="navbar">
@@ -22,56 +62,72 @@ export default function Navbar() {
       </div>
 
       <div className="right">
-        {/* Notifications dropdown */}
         <div className="notification" onClick={() => {
           setShowNotifications(!showNotifications);
           setShowProfile(false);
         }}>
           🔔
-          <span className="badge">2</span>
+          <span className="badge">{notifications.filter(n => !n.read).length}</span>
           {showNotifications && (
             <div className="dropdown">
               <h4>Notifications</h4>
               <div className="tabs">
                 <button className="activeTab">All</button>
-                <button>Unread <span className="unread">2</span></button>
+                <button>Unread <span className="unread">{notifications.filter(n => !n.read).length}</span></button>
               </div>
-              <div className="notifItem">
-                <strong>Task Assigned</strong>
-                <p>You have been assigned to ‘Redesign the landing page’</p>
-                <span>30 minutes ago</span>
-              </div>
-              <div className="notifItem">
-                <strong>Task Updated</strong>
-                <p>The due date for ‘Fix bug on mobile’ was changed</p>
-                <span>2 hours ago</span>
-              </div>
+              {notifications.length === 0 ? (
+                <div className="notifItem">No notifications yet</div>
+              ) : (
+                notifications.map(notif => (
+                  <div
+                    className={`notifItem ${notif.read ? "read" : "unread"}`}
+                    key={notif._id}
+                    onClick={async () => {
+                      try {
+                        await fetch(
+                          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/notifications/${notif._id}/read`,
+                          { method: "PUT" }
+                        );
+                        setNotifications((prev) =>
+                          prev.map((n) =>
+                            n._id === notif._id ? { ...n, read: true } : n
+                          )
+                        );
+                      } catch (error) {
+                        console.error("Failed to mark notification as read", error);
+                      }
+                    }}
+                  >
+                    <strong>{notif.message}</strong>
+                    <p>{notif?.task?.title || ""}</p>
+                    <span>{new Date(notif.createdAt).toLocaleTimeString()}</span>
+                  </div>
+                ))
+                
+              )}
               <button className="viewAll">View all notifications</button>
             </div>
           )}
         </div>
 
-        {/* Profile avatar dropdown */}
         <div className="avatar" onClick={() => {
           setShowProfile(!showProfile);
-          setShowNotifications(false);  // Close notifications dropdown if open
+          setShowNotifications(false);
         }}>
-          {user ? user.name.substring(0, 2).toUpperCase() : "??"} {/* Display first 2 letters of user's name */}
+          {user ? user.name.substring(0, 2).toUpperCase() : "??"}
           {showProfile && (
             <div className="profileDropdown">
               <div>
-                <strong>{user ? user.name : "Guest"}</strong><br />
-                <small>{user ? user.email : "Not logged in"}</small>
+                <strong>{user?.name || "Guest"}</strong><br />
+                <small>{user?.email || "Not logged in"}</small>
               </div>
               <hr />
               <Link href="/profile">👤 Profile</Link>
               <Link href="/settings">⚙️ Settings</Link>
-              {/* Only show logout button if user is authenticated */}
               {isAuthenticated && (
-                <button onClick={() => { 
-                  logout(); 
-                  // Optionally redirect to login page after logout
-                  window.location.href = "/login"; 
+                <button onClick={() => {
+                  logout();
+                  window.location.href = "/login";
                 }}>
                   ↩️ Log out
                 </button>
