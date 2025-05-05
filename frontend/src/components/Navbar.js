@@ -1,19 +1,21 @@
 import { useState } from "react";
 import Link from "next/link";
 import "../styles/Navbar.css";
-import { useAuth } from "../context/AuthContext"; // ✅ Import useAuth hook
+import { useAuth } from "../context/AuthContext"; 
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth(); // ✅ Destructure user and isAuthenticated from context
-  console.log("Navbar - User:", user);
-
+  const { user, isAuthenticated, logout } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <nav className="navbar">
       <div className="left">
-        <span className="logo">✅ TaskFlow</span>
+        <span className="logo">🛞 TaskCircle </span>
         <Link href="/dashboard" className="link">Dashboard</Link>
         <Link href="/tasks" className="link">Tasks</Link>
         <Link href="/team" className="link">Team</Link>
@@ -23,7 +25,7 @@ export default function Navbar() {
         {/* Notifications dropdown */}
         <div className="notification" onClick={() => {
           setShowNotifications(!showNotifications);
-          setShowProfile(false);  // Close profile dropdown if open
+          setShowProfile(false);
         }}>
           🔔
           <span className="badge">2</span>

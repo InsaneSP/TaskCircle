@@ -200,16 +200,10 @@
 
 
 
-
-
-
-
-
 .dashboard-container {
-  background-color: #f9f3e3;  /* Light parchment-like background */
-  color: #2e1a47;  /* Dark purple, inspired by samurai armor */
+  background-color: #f9f3e3;  
+  color: #2e1a47;  
   padding: 1.5rem;
-  font-family: 'Noto Sans', sans-serif;  /* Clean, simple typography */
 }
 
 .dashboard-header {
@@ -354,6 +348,42 @@
   color: #888;
 }
 
+.task-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.task-button {
+  background-color: transparent;
+  border: 1px solid #6b4e3d;
+  color: #6b4e3d;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.task-button:hover {
+  background-color: #f7e6e6;
+  border-color: #c72c48;
+  color: #c72c48;
+}
+
+.task-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  display: inline-block;
+}
+
 .task-status-priority {
   margin-top: 0.5rem;
   display: flex;
@@ -361,22 +391,30 @@
 }
 
 .task-priority {
-  background-color: #c72c48;  /* Samurai red */
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
-}
-
-.high-priority {
   background-color: #c72c48;
-}
-
-.in-progress {
-  background-color: #ff9800;  /* Gold for in-progress */
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  display: inline-block;
 }
 
 .todo {
-  background-color: #2196f3;  /* Samurai blue for todo */
+  background-color: #2196f3; /* Blue */
+}
+
+.in-progress {
+  background-color: #ff9800; /* Orange */
+}
+
+.completed {
+  background-color: #4caf50; /* Green */
+}
+
+.overdue {
+  background-color: #e53935; /* Red */
 }
 
 .task-stats {

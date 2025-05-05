@@ -1,12 +1,24 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { AuthProvider } from '../context/AuthContext'; // Import the UserProvider
+import { AuthProvider } from '../context/AuthContext';
 import Navbar from "../components/Navbar";
+import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+
+function AppContent({ Component, pageProps }) {
+  const { user } = useAuth();
+
+  return (
+    <>
+      {user && <Navbar />}
+      <Component {...pageProps} />
+    </>
+  );
+}
 
 function MyApp({ Component, pageProps }) {
   return (
     <AuthProvider>
-      <Navbar />
-      <Component {...pageProps} />
+      <AppContent Component={Component} pageProps={pageProps} />
     </AuthProvider>
   );
 }

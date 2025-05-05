@@ -18,6 +18,16 @@ const CreateTask = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
+      if (user === null) {
+        router.push('/login');
+      }
+    }, [user]);
+  
+    if (user === null) {
+      return null;
+    }
+
+  useEffect(() => {
     if (user?.id) {
       axios.get("http://localhost:5000/api/users").then(res => setUsers(res.data));
     }

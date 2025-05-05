@@ -2,20 +2,30 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
 import '../styles/TasksPage.css';
 
 const TasksPage = () => {
   const { user } = useAuth();
   const userId = user?.id;
-
+  const router = useRouter();
   const [tasks, setTasks] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState([]);
   const [priorityFilter, setPriorityFilter] = useState('All');
   const [assigneeFilter, setAssigneeFilter] = useState([]);
-
   const [assignees, setAssignees] = useState([]);
+
+  useEffect(() => {
+    if (user === null) {
+      router.push('/login');
+    }
+  }, [user]);
+
+  if (user === null) {
+    return null;
+  }
 
   useEffect(() => {
     const fetchTasks = async () => {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Link from 'next/link';
@@ -6,6 +7,7 @@ import "../styles/Dashboard.css";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const router = useRouter();
   const userId = user?.id;
   const [activeTab, setActiveTab] = useState('assigned');
   const [tasks, setTasks] = useState([]);
@@ -14,6 +16,40 @@ const Dashboard = () => {
     priorities: { high: 0, medium: 0, low: 0 },
     statuses: { todo: 0, inProgress: 0, completed: 0 },
   });
+
+  const calculateStats = (taskList) => {
+    const priorityCounts = { high: 0, medium: 0, low: 0 };
+    const statusCounts = { todo: 0, inProgress: 0, completed: 0 };
+
+    taskList.forEach(task => {
+      const priority = task.priority?.toLowerCase();
+      if (priority && priorityCounts[priority] !== undefined) {
+        priorityCounts[priority]++;
+      }
+
+      if (task.status === 'To Do') statusCounts.todo++;
+      else if (task.status === 'In Progress') statusCounts.inProgress++;
+      else if (task.status === 'Completed') statusCounts.completed++;
+    });
+
+    return {
+      total: taskList.length,
+      completed: statusCounts.completed,
+      inProgress: statusCounts.inProgress,
+      priorities: priorityCounts,
+      statuses: statusCounts
+    };
+  };
+
+  useEffect(() => {
+    if (user === null) {
+      router.push('/login'); 
+    }
+  }, [user]);
+
+  if (user === null) {
+    return null;
+  }
 
   useEffect(() => {
     const fetchTasksAndStats = async () => {
@@ -38,28 +74,9 @@ const Dashboard = () => {
         }
 
         setTasks(filteredTasks);
-
-        const priorityCounts = { high: 0, medium: 0, low: 0 };
-        const statusCounts = { todo: 0, inProgress: 0, completed: 0 };
-
-        filteredTasks.forEach(task => {
-          const priority = task.priority?.toLowerCase();
-          if (priority && priorityCounts[priority] !== undefined) {
-            priorityCounts[priority]++;
-          }
-
-          if (task.status === 'To Do') statusCounts.todo++;
-          else if (task.status === 'In Progress') statusCounts.inProgress++;
-          else if (task.status === 'Completed') statusCounts.completed++;
-        });
-
         setStats(prev => ({
           ...prev,
-          total: filteredTasks.length,
-          completed: statusCounts.completed,
-          inProgress: statusCounts.inProgress,
-          priorities: priorityCounts,
-          statuses: statusCounts
+          ...calculateStats(filteredTasks)
         }));
       } catch (err) {
         console.error("Failed to fetch tasks", err);
@@ -72,9 +89,16 @@ const Dashboard = () => {
   const handleStatusChange = async (taskId, newStatus) => {
     try {
       await axios.put(`http://localhost:5000/api/tasks/${taskId}`, { status: newStatus });
-      setTasks(prev =>
-        prev.map(task => task._id === taskId ? { ...task, status: newStatus } : task)
+
+      const updatedTasks = tasks.map(task =>
+        task._id === taskId ? { ...task, status: newStatus } : task
       );
+
+      setTasks(updatedTasks);
+      setStats(prev => ({
+        ...prev,
+        ...calculateStats(updatedTasks)
+      }));
     } catch (err) {
       console.error("Status update failed", err);
     }
@@ -84,7 +108,12 @@ const Dashboard = () => {
     if (!confirm("Are you sure you want to delete this task?")) return;
     try {
       await axios.delete(`http://localhost:5000/api/tasks/${taskId}`);
-      setTasks(prev => prev.filter(task => task._id !== taskId));
+      const updatedTasks = tasks.filter(task => task._id !== taskId);
+      setTasks(updatedTasks);
+      setStats(prev => ({
+        ...prev,
+        ...calculateStats(updatedTasks)
+      }));
     } catch (err) {
       console.error("Delete failed", err);
     }
