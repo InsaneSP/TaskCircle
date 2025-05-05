@@ -1,0 +1,110 @@
+/* Container for the whole page */
+.container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f7f1e1;  /* Light parchment or scroll-like background */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Noto Sans', sans-serif;  /* Simple and clean font */
+}
+
+/* Title of the page */
+h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #2e1a47;  /* Dark purple, traditional samurai color */
+  text-align: center;
+  text-transform: uppercase;  /* Samurai-style bold text */
+  letter-spacing: 2px;
+}
+
+/* Form styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Input and textarea fields */
+input,
+textarea,
+select {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #6b4e3d;  /* Dark brown border inspired by armor */
+  border-radius: 5px;
+  width: 100%;
+  background-color: #fff;  /* White background for clarity */
+  color: #333;
+  font-weight: bold;
+}
+
+/* Input field focus effect */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #c72c48;  /* Red color like samurai armor */
+  outline: none;
+  box-shadow: 0 0 5px rgba(199, 44, 72, 0.6);  /* Slight glow effect */
+}
+
+/* Submit button styling */
+button {
+  padding: 12px 20px;
+  font-size: 16px;
+  background-color: #c72c48;  /* Samurai red for a strong look */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+button:hover {
+  background-color: #9e2137;  /* Darker red on hover */
+}
+
+/* Option list styling */
+select option {
+  padding: 12px;
+  font-size: 16px;
+  background-color: #f7f1e1;  /* Light parchment background */
+}
+
+/* Placeholder styling */
+input::placeholder,
+textarea::placeholder {
+  color: #888;  /* Slight gray for the placeholder text */
+}
+
+/* Optional Additions for focus states */
+select:focus,
+textarea:focus {
+  border-color: #c72c48;  /* Red border on focus */
+}
+
+/* Responsive styling */
+@media (max-width: 600px) {
+  .container {
+      padding: 15px;
+  }
+
+  h2 {
+      font-size: 22px;
+  }
+
+  button {
+      font-size: 14px;
+  }
+
+  input,
+  textarea,
+  select {
+      font-size: 14px;
+  }
+}
