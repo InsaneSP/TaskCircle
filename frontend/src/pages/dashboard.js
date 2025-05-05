@@ -43,7 +43,11 @@ const Dashboard = () => {
         const statusCounts = { todo: 0, inProgress: 0, completed: 0 };
 
         filteredTasks.forEach(task => {
-          if (task.priority && priorityCounts[task.priority]) priorityCounts[task.priority]++;
+          const priority = task.priority?.toLowerCase();
+          if (priority && priorityCounts[priority] !== undefined) {
+            priorityCounts[priority]++;
+          }
+
           if (task.status === 'To Do') statusCounts.todo++;
           else if (task.status === 'In Progress') statusCounts.inProgress++;
           else if (task.status === 'Completed') statusCounts.completed++;
