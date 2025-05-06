@@ -22,7 +22,7 @@ export default function Register() {
       await updateProfile(user, { displayName: name });
 
       // Send data to backend including the name
-      const response = await axios.post("http://localhost:5000/api/users/auth", {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/auth`, {
         uid: user.uid,
         name: name, // Use the entered name here
         email: user.email,

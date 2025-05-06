@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import io from "socket.io-client";
 import { useMemo } from "react";
 
-const socket = io("http://localhost:5000", {
+const socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
   transports: ["websocket"],
   autoConnect: false,
 });
@@ -40,7 +40,7 @@ export default function Navbar() {
     socket.connect();
     socket.emit("join", userId);
   
-    fetch(`http://localhost:5000/api/notifications/${userId}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${userId}`)
       .then((res) => res.json())
       .then((data) => setNotifications(data))
       .catch((error) => console.error("Failed to fetch notifications:", error));
@@ -112,7 +112,7 @@ export default function Navbar() {
             onClick={async () => {
               try {
                 await fetch(
-                  `http://localhost:5000/api/notifications/${notif._id}/read`,
+                  `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${notif._id}/read`,
                   { method: "PUT" }
                 );
                 setNotifications((prev) =>

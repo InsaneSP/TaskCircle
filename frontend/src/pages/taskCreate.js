@@ -28,7 +28,7 @@ const CreateTask = () => {
 
   useEffect(() => {
     if (user?.id) {
-      axios.get("http://localhost:5000/api/users").then(res => setUsers(res.data));
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users`).then(res => setUsers(res.data));
     }
   }, [user]);
 
@@ -59,7 +59,7 @@ const CreateTask = () => {
     console.log("Task data to send:", taskData);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/tasks", taskData);
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, taskData);
       console.log("Response:", response);
       if (response.status === 201) {
         router.push('/dashboard');

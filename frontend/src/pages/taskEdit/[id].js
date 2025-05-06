@@ -12,7 +12,7 @@ const EditTask = () => {
 
   useEffect(() => {
     if (id && user?.id) {
-      axios.get(`http://localhost:5000/api/tasks/${id}`).then(res => {
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`).then(res => {
         setTask(res.data);
       });
     }
@@ -34,7 +34,7 @@ const EditTask = () => {
     };
   
     try {
-      const response = await axios.put(`http://localhost:5000/api/tasks/${id}`, updatedTask);
+      const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`, updatedTask);
       console.log("Task updated successfully:", response.data);
       router.push('/dashboard');
     } catch (err) {

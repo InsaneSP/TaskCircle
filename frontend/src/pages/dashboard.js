@@ -57,9 +57,9 @@ const Dashboard = () => {
       try {
         let endpoint = '';
         if (activeTab === 'assigned' || activeTab === 'overdue') {
-          endpoint = `http://localhost:5000/api/tasks/assigned/${userId}`;
+          endpoint = `${process.env.NEXT_PUBLIC_API_URL}/api/tasks/assigned/${userId}`;
         } else if (activeTab === 'created') {
-          endpoint = `http://localhost:5000/api/tasks/created/${userId}`;
+          endpoint = `${process.env.NEXT_PUBLIC_API_URL}/api/tasks/created/${userId}`;
         }
 
         const res = await axios.get(endpoint);
@@ -87,7 +87,7 @@ const Dashboard = () => {
 
   const handleStatusChange = async (taskId, newStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/tasks/${taskId}`, { status: newStatus });
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${taskId}`, { status: newStatus });
 
       const updatedTasks = tasks.map(task =>
         task._id === taskId ? { ...task, status: newStatus } : task
@@ -106,7 +106,7 @@ const Dashboard = () => {
   const handleDelete = async (taskId) => {
     if (!confirm("Are you sure you want to delete this task?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${taskId}`);
       const updatedTasks = tasks.filter(task => task._id !== taskId);
       setTasks(updatedTasks);
       setStats(prev => ({

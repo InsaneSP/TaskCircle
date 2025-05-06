@@ -19,7 +19,7 @@ export default function Login() {
       const user = userCredential.user;
   
       // Send data to backend after login
-      const response = await axios.post("http://localhost:5000/api/users/auth", {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/auth`, {
         uid: user.uid,
         email: user.email,
         name: user.displayName || "No Name",  // If Firebase returns the displayName, use it

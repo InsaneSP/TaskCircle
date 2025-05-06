@@ -29,7 +29,7 @@ const TasksPage = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/tasks');
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`);
         setTasks(res.data);
         const uniqueAssignees = [...new Set(res.data.map(task => task.assignedTo?.name).filter(Boolean))];
         setAssignees(uniqueAssignees);

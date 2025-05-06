@@ -16,7 +16,7 @@ export default function NotificationsPage() {
 
       console.log("Using userId:", userId);
 
-      const res = await fetch(`http://localhost:5000/api/notifications/${userId}?status=${filter}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${userId}?status=${filter}`);
       const data = await res.json();
       if (Array.isArray(data)) {
         setNotifications(data);
@@ -72,7 +72,7 @@ export default function NotificationsPage() {
   }, [router.events, user]);
 
   const markAsRead = async (id) => {
-    await fetch(`http://localhost:5000/api/notifications/${id}/read`, { method: "PUT" });
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${id}/read`, { method: "PUT" });
     setNotifications((prev) =>
       prev.map((n) => (n._id === id ? { ...n, read: true } : n))
     );
@@ -87,7 +87,7 @@ export default function NotificationsPage() {
 
     try {
       console.log("Marking all as read for userId:", userId);
-      await fetch(`http://localhost:5000/api/notifications/${userId}/read-all`, { method: "PUT" });
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${userId}/read-all`, { method: "PUT" });
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     } catch (err) {
       console.error("Failed to mark all as read:", err);
