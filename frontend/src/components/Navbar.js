@@ -3,6 +3,7 @@ import Link from "next/link";
 import "../styles/Navbar.css";
 import { useAuth } from "../context/AuthContext";
 import io from "socket.io-client";
+import { useMemo } from "react";
 
 const socket = io("http://localhost:5000", {
   transports: ["websocket"],
@@ -14,7 +15,14 @@ export default function Navbar() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  
+  const [activeTab, setActiveTab] = useState("unread");
+
+  const filteredNotifications = useMemo(() => {
+    return notifications.filter((n) =>
+      activeTab === "unread" ? !n.read : n.read
+    );
+  }, [notifications, activeTab]);
+
   useEffect(() => {
     console.log("User changed:", user);
   }, [user]);  
@@ -69,45 +77,69 @@ export default function Navbar() {
           🔔
           <span className="badge">{notifications.filter(n => !n.read).length}</span>
           {showNotifications && (
-            <div className="dropdown">
-              <h4>Notifications</h4>
-              <div className="tabs">
-                <button className="activeTab">All</button>
-                <button>Unread <span className="unread">{notifications.filter(n => !n.read).length}</span></button>
-              </div>
-              {notifications.length === 0 ? (
-                <div className="notifItem">No notifications yet</div>
-              ) : (
-                notifications.map(notif => (
-                  <div
-                    className={`notifItem ${notif.read ? "read" : "unread"}`}
-                    key={notif._id}
-                    onClick={async () => {
-                      try {
-                        await fetch(
-                          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/notifications/${notif._id}/read`,
-                          { method: "PUT" }
-                        );
-                        setNotifications((prev) =>
-                          prev.map((n) =>
-                            n._id === notif._id ? { ...n, read: true } : n
-                          )
-                        );
-                      } catch (error) {
-                        console.error("Failed to mark notification as read", error);
-                      }
-                    }}
-                  >
-                    <strong>{notif.message}</strong>
-                    <p>{notif?.task?.title || ""}</p>
-                    <span>{new Date(notif.createdAt).toLocaleTimeString()}</span>
-                  </div>
-                ))
-                
-              )}
-              <button className="viewAll">View all notifications</button>
-            </div>
-          )}
+  <div className="dropdown">
+    <h4>Notifications</h4>
+
+    <div className="tabs">
+    <button
+  className={activeTab === "unread" ? "activeTab" : ""}
+  onClick={(e) => {
+    e.stopPropagation();
+    setActiveTab("unread");
+  }}
+>
+  Unread <span className="unread">{notifications.filter(n => !n.read).length}</span>
+</button>
+<button
+  className={activeTab === "read" ? "activeTab" : ""}
+  onClick={(e) => {
+    e.stopPropagation();
+    setActiveTab("read");
+  }}
+>
+  Read
+</button>
+
+    </div>
+
+    <div className="notifList">
+      {filteredNotifications.length === 0 ? (
+        <div className="notifItem">No notifications</div>
+      ) : (
+        filteredNotifications.slice(0, 5).map((notif) => (
+          <div
+            className={`notifItem ${notif.read ? "read" : "unread"}`}
+            key={notif._id}
+            onClick={async () => {
+              try {
+                await fetch(
+                  `http://localhost:5000/api/notifications/${notif._id}/read`,
+                  { method: "PUT" }
+                );
+                setNotifications((prev) =>
+                  prev.map((n) =>
+                    n._id === notif._id ? { ...n, read: true } : n
+                  )
+                );
+              } catch (error) {
+                console.error("Failed to mark notification as read", error);
+              }
+            }}            
+          >
+            <strong>{notif.message}</strong>
+            <p>{notif?.task?.title || ""}</p>
+            <span>{new Date(notif.createdAt).toLocaleTimeString()}</span>
+          </div>
+        ))
+      )}
+    </div>
+
+    <Link href="/notifications">
+      <button className="viewAll">View all notifications</button>
+    </Link>
+  </div>
+)}
+
         </div>
 
         <div className="avatar" onClick={() => {
