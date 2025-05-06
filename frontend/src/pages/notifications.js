@@ -2,55 +2,75 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "../styles/NotificationsPage.css";
 import socket from "../utils/socket";
-
-useEffect(() => {
-  if (!user?.uid) return;
-
-  const userId = user.uid;
-
-  if (!socket.connected) {
-    socket.connect();
-    socket.emit("join", userId);
-  }
-
-  const handleNewNotification = (notif) => {
-    setNotifications((prev) => [notif, ...prev]);
-  };
-
-  socket.on("newNotification", handleNewNotification);
-
-  return () => {
-    socket.off("newNotification", handleNewNotification);
-  };
-}, [user]);
+import { useRouter } from "next/router";
 
 export default function NotificationsPage() {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState("all");
- 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/api/notifications/${user.uid}?status=${filter}`);
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setNotifications(data);
-        } else {
-          console.error("Expected array, got:", data);
-          setNotifications([]);
-        }
-      } catch (err) {
-        console.error("Failed to fetch notifications:", err);
+  const router = useRouter();
+
+  const fetchNotifications = async () => {
+    try {
+      const userId = user?.id || user?.uid;
+      if (!userId) return;
+
+      console.log("Using userId:", userId);
+
+      const res = await fetch(`http://localhost:5000/api/notifications/${userId}?status=${filter}`);
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setNotifications(data);
+      } else {
+        console.error("Expected array, got:", data);
         setNotifications([]);
       }
-    };
-  
-    if (user?.uid) {
+    } catch (err) {
+      console.error("Failed to fetch notifications:", err);
+      setNotifications([]);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
       fetchNotifications();
     }
   }, [user, filter]);
-  
+
+  useEffect(() => {
+    const userId = user?.id || user?.uid;
+    if (!userId) return;
+
+    if (!socket.connected) {
+      socket.connect();
+      socket.emit("join", userId);
+    }
+
+    const handleNewNotification = (notif) => {
+      if (filter === "all" || (filter === "unread" && !notif.read)) {
+        setNotifications((prev) => [notif, ...prev]);
+      }
+    };
+
+    socket.on("newNotification", handleNewNotification);
+
+    return () => {
+      socket.off("newNotification", handleNewNotification);
+    };
+  }, [user, filter]);
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (user) {
+        fetchNotifications();
+      }
+    };
+
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events, user]);
 
   const markAsRead = async (id) => {
     await fetch(`http://localhost:5000/api/notifications/${id}/read`, { method: "PUT" });
@@ -60,8 +80,19 @@ export default function NotificationsPage() {
   };
 
   const markAllAsRead = async () => {
-    await fetch(`http://localhost:5000/api/notifications/${user.uid}/read-all`, { method: "PUT" });
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    const userId = user?.id || user?.uid;
+    if (!userId) {
+      console.error("User ID is undefined. Cannot mark all as read.");
+      return;
+    }
+
+    try {
+      console.log("Marking all as read for userId:", userId);
+      await fetch(`http://localhost:5000/api/notifications/${userId}/read-all`, { method: "PUT" });
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    } catch (err) {
+      console.error("Failed to mark all as read:", err);
+    }
   };
 
   if (!user) return null;
@@ -70,11 +101,15 @@ export default function NotificationsPage() {
     <div className="notificationsPage">
       <h2>All Notifications</h2>
       <div className="notifControls">
-        <button onClick={() => setFilter("all")} className={filter === "all" ? "active" : ""}>All</button>
-        <button onClick={() => setFilter("unread")} className={filter === "unread" ? "active" : ""}>Unread</button>
-        <button onClick={markAllAsRead}>Mark All as Read</button>
+        <div className="filterButtons">
+          <button onClick={() => setFilter("all")} className={filter === "all" ? "active" : ""}>All</button>
+          <button onClick={() => setFilter("unread")} className={filter === "unread" ? "active" : ""}>Unread</button>
+        </div>
+        <div className="markAllButton">
+          <button onClick={markAllAsRead}>Mark All as Read</button>
+        </div>
       </div>
-
+  
       {notifications.length === 0 ? (
         <p>No notifications.</p>
       ) : (
@@ -91,4 +126,5 @@ export default function NotificationsPage() {
       )}
     </div>
   );
+  
 }

@@ -166,13 +166,15 @@ const Dashboard = () => {
                 <span className={`task-status ${task.status.toLowerCase().replace(" ", "-")}`}>
                   {activeTab === 'assigned' ? (
                     <select
-                      value={task.status}
-                      onChange={(e) => handleStatusChange(task._id, e.target.value)}
-                    >
-                      <option value="To Do">To Do</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Completed">Completed</option>
-                    </select>
+                    value={task.status}
+                    onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                    className={`status-${task.status.toLowerCase().replace(/\s+/g, '-')}`}
+                  >
+                    <option value="To Do">To Do</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                  
                   ) : (
                     task.status
                   )}

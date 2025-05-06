@@ -30,7 +30,7 @@ export default function Navbar() {
   useEffect(() => {
     if (!user) return;
   
-    console.log("User object:", user); // Log user object to inspect its properties
+    console.log("User object:", user);
   
     const userId = user.id || user.uid;
     if (!userId) {
@@ -66,7 +66,7 @@ export default function Navbar() {
         <span className="logo">🛞 TaskCircle </span>
         <Link href="/dashboard" className="link">Dashboard</Link>
         <Link href="/tasks" className="link">Tasks</Link>
-        <Link href="/team" className="link">Team</Link>
+        {/* <Link href="/team" className="link">Team</Link> */}
       </div>
 
       <div className="right">
@@ -130,16 +130,15 @@ export default function Navbar() {
             <p>{notif?.task?.title || ""}</p>
             <span>{new Date(notif.createdAt).toLocaleTimeString()}</span>
           </div>
-        ))
-      )}
-    </div>
+                ))
+              )}
+            </div>
 
-    <Link href="/notifications">
-      <button className="viewAll">View all notifications</button>
-    </Link>
-  </div>
-)}
-
+            <Link href="/notifications">
+              <button className="viewAll">View all notifications</button>
+            </Link>
+          </div>
+        )}
         </div>
 
         <div className="avatar" onClick={() => {
@@ -155,7 +154,6 @@ export default function Navbar() {
               </div>
               <hr />
               <Link href="/profile">👤 Profile</Link>
-              <Link href="/settings">⚙️ Settings</Link>
               {isAuthenticated && (
                 <button onClick={() => {
                   logout();
