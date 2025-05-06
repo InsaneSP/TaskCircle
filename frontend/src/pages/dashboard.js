@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Link from 'next/link';
-import "../styles/Dashboard.css";
 
 const Dashboard = () => {
   const { user } = useAuth();

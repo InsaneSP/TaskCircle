@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import "../styles/Navbar.css";
 import { useAuth } from "../context/AuthContext";
 import io from "socket.io-client";
 import { useMemo } from "react";

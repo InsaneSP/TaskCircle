@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
-import "../../styles/CreateTask.css"; // reuse styles
 
 const EditTask = () => {
   const router = useRouter();

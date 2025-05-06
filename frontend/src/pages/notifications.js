@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import "../styles/NotificationsPage.css";
 import socket from "../utils/socket";
 import { useRouter } from "next/router";
 

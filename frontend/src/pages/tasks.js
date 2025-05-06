@@ -4,7 +4,6 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
-import '../styles/TasksPage.css';
 
 const TasksPage = () => {
   const { user } = useAuth();

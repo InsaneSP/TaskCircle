@@ -1,3 +1,9 @@
+import '../styles/CreateTask.css';
+import '../styles/Dashboard.css';
+import '../styles/Navbar.css';
+import '../styles/NotificationsPage.css';
+import '../styles/TasksPage.css';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthProvider } from '../context/AuthContext';
 import Navbar from "../components/Navbar";
