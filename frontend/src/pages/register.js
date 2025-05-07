@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext"; // ✅ import useAuth
+import { useAuth } from "../context/AuthContext";
 
 export default function Register() {
   const { setUser } = useAuth(); // ✅ get setUser from context
@@ -19,9 +19,10 @@ export default function Register() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // Update profile with user name
       await updateProfile(user, { displayName: name });
 
-      // Send data to backend including the name
+      // Send data to backend
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/auth`, {
         uid: user.uid,
         name: name, // Use the entered name here
@@ -30,15 +31,15 @@ export default function Register() {
 
       const userData = response.data;
 
-      // ✅ Set the user globally using context
+      // Set user in context globally
       setUser({
         id: user.uid,
-        name: name, // Store the name
+        name: name,
         email: user.email,
         token: userData.token, // Optional if backend returns token
       });
 
-      router.push("/login");
+      router.push("/dashboard");
     } catch (err) {
       console.error(err);
       setError(err.message || "Something went wrong.");

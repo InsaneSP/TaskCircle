@@ -6,6 +6,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true },
   role: { type: String, default: "user" },
   department: { type: String },
+  about: { type: String },
+  phone: { type: String },
+  location: { type: String },
+  dob: { type: Date },
   assignedTasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
   createdTasks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
 }, { timestamps: true });

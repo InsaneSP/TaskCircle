@@ -8,6 +8,7 @@ import { auth } from "../lib/firebase";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import Link from "next/link";
 
 // Initialize Google Provider
 const googleProvider = new GoogleAuthProvider();
@@ -33,6 +34,7 @@ export default function Login() {
 
       const userData = response.data;
 
+      // Set user in context
       login(user.uid);
       setUser({
         id: user.uid,
@@ -41,6 +43,7 @@ export default function Login() {
         token: userData.token || "",
       });
 
+      // Redirect to dashboard
       router.push("/dashboard");
     } catch (err) {
       console.error(err);
@@ -52,18 +55,18 @@ export default function Login() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-  
+
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/auth`, {
         uid: user.uid,
         name: user.displayName || "Google User",
         email: user.email,
       });
-  
+
       const userData = response.data;
-  
+
       // Call the login function to update context
       login(userData.name, userData.uid);
-  
+
       // Update the user state from response data
       setUser({
         id: userData.uid,
@@ -71,13 +74,14 @@ export default function Login() {
         email: userData.email,
         token: userData.token || "",
       });
-  
-      router.push("/dashboard");  // Redirect to dashboard or wherever necessary
+
+      // Redirect to dashboard
+      router.push("/dashboard");
     } catch (error) {
       console.error("Google sign-in error:", error);
       setError("Google Sign-In Failed");
     }
-  };  
+  };
 
   return (
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
@@ -113,8 +117,11 @@ export default function Login() {
         </form>
 
         <div className="text-center mt-3">
-          <button className="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center gap-2"
-            onClick={handleGoogleLogin}>
+          ------------- OR -------------
+        </div>
+
+        <div className="text-center mt-3">
+          <button className="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center gap-2" onClick={handleGoogleLogin}>
             Continue with Google
           </button>
         </div>
@@ -122,6 +129,13 @@ export default function Login() {
         <div className="mt-3 text-center">
           <p>Don't have an account? <a href="/register">Sign up</a></p>
         </div>
+
+        <div className="text-end mb-2">
+          <Link href="/forgot" className="text-decoration-none" style={{ fontSize: "0.9rem" }}>
+            Forgot Password?
+          </Link>
+        </div>
+
       </div>
     </div>
   );

@@ -42,7 +42,13 @@ export default function Navbar() {
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${userId}`)
       .then((res) => res.json())
-      .then((data) => setNotifications(data))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setNotifications(data);
+        } else {
+          console.error("Expected an array of notifications, but got:", data);
+          setNotifications([]);  // Fallback to an empty array
+        }})
       .catch((error) => console.error("Failed to fetch notifications:", error));
 
     const handleNewNotif = (notif) => {
