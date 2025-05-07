@@ -136,12 +136,11 @@ const TasksPage = () => {
               {filteredTasks.map(task => (
                 <tr key={task._id}>
                   <td>{task.title}</td>
-                  <td><span className={`badge ${task.status.replace(/\s+/g, '-').toLowerCase()}`}>{task.status}</span></td>
-                  <td><span className={`badge ${task.priority.toLowerCase()}-priority`}>{task.priority}</span></td>
+                  <td>{task.status}</td>
+                  <td>{task.priority}</td>
                   <td>{new Date(task.dueDate).toLocaleDateString()}</td>
                   <td>{task.assignedTo?.name || '-'}</td>
                   <td>{task.description || '-'}</td>
-                  <td><button className="dots-btn">⋯</button></td>
                 </tr>
               ))}
             </tbody>

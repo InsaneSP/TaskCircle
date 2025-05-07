@@ -159,6 +159,7 @@ const Dashboard = () => {
                 <p className="task-title">{task.title}</p>
                 <span className="task-assigned-icon">👤</span>
               </div>
+              <p className="task-description">{task.description}</p>
               <p className="task-due-date">Due {new Date(task.dueDate).toLocaleDateString()}</p>
               <div className="task-status-priority">
                 <span className={`task-priority ${task.priority}-priority`}>{task.priority}</span>

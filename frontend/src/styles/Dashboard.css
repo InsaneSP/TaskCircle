@@ -190,7 +190,7 @@
   background-color: #e11d48;
 }
 
-.task-status.todo {
+.task-status.to-do {
   background-color: #3b82f6;
 }
 .task-status.in-progress {
@@ -244,16 +244,16 @@
   transition: background-color 0.3s ease;
 }
 
-.task-status select.status-todo {
-  background-color: #9ca3af;
+.task-status select.status-to-do {
+  background-color: #3b82f6;
 }
 
 .task-status select.status-in-progress {
-  background-color: #f59e0b;
+  background-color: #f97316;
 }
 
 .task-status select.status-completed {
-  background-color: #22c55e;
+  background-color: #10b981;
 }
 
 /* ===== Progress Bars ===== */
@@ -291,11 +291,16 @@
 
 .progress-bar {
   height: 6px;
-  background-color: #2563eb;
+  background-color: #2563eb !important;
   border-radius: 9999px;
 }
 
 .divider {
   margin: 1rem 0;
   border-color: #d1d5db;
+}
+
+option {
+  background-color: #ffffff;
+  color: #000000;
 }
