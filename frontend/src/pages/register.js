@@ -38,7 +38,7 @@ export default function Register() {
         token: userData.token, // Optional if backend returns token
       });
 
-      router.push("/dashboard");
+      router.push("/login");
     } catch (err) {
       console.error(err);
       setError(err.message || "Something went wrong.");

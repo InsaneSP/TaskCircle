@@ -1,110 +1,108 @@
-/* Container for the whole page */
+/* ====== Base Styles ====== */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fb;
+  color: #333;
+}
+
+/* ====== Page Container ====== */
 .container {
-  width: 100%;
   max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f7f1e1;  /* Light parchment or scroll-like background */
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  font-family: 'Noto Sans', sans-serif;  /* Simple and clean font */
+  margin: 2.5rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
 }
 
-/* Title of the page */
+/* ====== Title ====== */
 h2 {
-  font-size: 28px;
-  margin-bottom: 20px;
-  color: #2e1a47;  /* Dark purple, traditional samurai color */
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #1f2937;
   text-align: center;
-  text-transform: uppercase;  /* Samurai-style bold text */
-  letter-spacing: 2px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
 }
 
-/* Form styling */
+/* ====== Form Layout ====== */
 form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.25rem;
 }
 
-/* Input and textarea fields */
+/* ====== Input Elements ====== */
 input,
 textarea,
 select {
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #6b4e3d;  /* Dark brown border inspired by armor */
-  border-radius: 5px;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
   width: 100%;
-  background-color: #fff;  /* White background for clarity */
-  color: #333;
-  font-weight: bold;
+  background-color: #ffffff;
+  color: #111827;
+  font-weight: 500;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Input field focus effect */
+/* ====== Focus State ====== */
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: #c72c48;  /* Red color like samurai armor */
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
   outline: none;
-  box-shadow: 0 0 5px rgba(199, 44, 72, 0.6);  /* Slight glow effect */
 }
 
-/* Submit button styling */
+/* ====== Placeholder ====== */
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* ====== Select Options ====== */
+select option {
+  background-color: #ffffff;
+  font-size: 1rem;
+}
+
+/* ====== Submit Button ====== */
 button {
-  padding: 12px 20px;
-  font-size: 16px;
-  background-color: #c72c48;  /* Samurai red for a strong look */
-  color: #fff;
+  padding: 0.85rem 1.25rem;
+  font-size: 1rem;
+  background-color: #2563eb;
+  color: white;
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: 100%;
-  font-weight: bold;
+  border-radius: 8px;
+  font-weight: 600;
   text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
 }
 
 button:hover {
-  background-color: #9e2137;  /* Darker red on hover */
+  background-color: #1d4ed8;
 }
 
-/* Option list styling */
-select option {
-  padding: 12px;
-  font-size: 16px;
-  background-color: #f7f1e1;  /* Light parchment background */
-}
-
-/* Placeholder styling */
-input::placeholder,
-textarea::placeholder {
-  color: #888;  /* Slight gray for the placeholder text */
-}
-
-/* Optional Additions for focus states */
-select:focus,
-textarea:focus {
-  border-color: #c72c48;  /* Red border on focus */
-}
-
-/* Responsive styling */
+/* ====== Responsive Design ====== */
 @media (max-width: 600px) {
   .container {
-      padding: 15px;
+    padding: 1.25rem;
   }
 
   h2 {
-      font-size: 22px;
-  }
-
-  button {
-      font-size: 14px;
+    font-size: 1.5rem;
   }
 
   input,
   textarea,
-  select {
-      font-size: 14px;
+  select,
+  button {
+    font-size: 0.9rem;
   }
 }

@@ -24,38 +24,38 @@ export default function Navbar() {
 
   useEffect(() => {
     console.log("User changed:", user);
-  }, [user]);  
-  
+  }, [user]);
+
   useEffect(() => {
     if (!user) return;
-  
+
     console.log("User object:", user);
-  
+
     const userId = user.id || user.uid;
     if (!userId) {
       console.error("User ID is not available. Cannot connect to socket.");
       return;
     }
-  
+
     socket.connect();
     socket.emit("join", userId);
-  
+
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${userId}`)
       .then((res) => res.json())
       .then((data) => setNotifications(data))
       .catch((error) => console.error("Failed to fetch notifications:", error));
-  
+
     const handleNewNotif = (notif) => {
       setNotifications((prev) => [notif, ...prev]);
     };
-  
+
     socket.on("newNotification", handleNewNotif);
-  
+
     return () => {
       socket.off("newNotification", handleNewNotif);
       socket.disconnect();
     };
-  }, [user]);  
+  }, [user]);
 
   if (!user) return null;
 
@@ -76,75 +76,75 @@ export default function Navbar() {
           🔔
           <span className="badge">{notifications.filter(n => !n.read).length}</span>
           {showNotifications && (
-  <div className="dropdown">
-    <h4>Notifications</h4>
+            <div className="dropdown">
+              <h4>Notifications</h4>
 
-    <div className="tabs">
-    <button
-  className={activeTab === "unread" ? "activeTab" : ""}
-  onClick={(e) => {
-    e.stopPropagation();
-    setActiveTab("unread");
-  }}
->
-  Unread <span className="unread">{notifications.filter(n => !n.read).length}</span>
-</button>
-<button
-  className={activeTab === "read" ? "activeTab" : ""}
-  onClick={(e) => {
-    e.stopPropagation();
-    setActiveTab("read");
-  }}
->
-  Read
-</button>
+              <div className="tabs">
+                <button
+                  className={activeTab === "unread" ? "activeTab" : ""}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveTab("unread");
+                  }}
+                >
+                  Unread <span className="unread">{notifications.filter(n => !n.read).length}</span>
+                </button>
+                <button
+                  className={activeTab === "read" ? "activeTab" : ""}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveTab("read");
+                  }}
+                >
+                  Read
+                </button>
 
-    </div>
+              </div>
 
-    <div className="notifList">
-      {filteredNotifications.length === 0 ? (
-        <div className="notifItem">No notifications</div>
-      ) : (
-        filteredNotifications.slice(0, 5).map((notif) => (
-          <div
-            className={`notifItem ${notif.read ? "read" : "unread"}`}
-            key={notif._id}
-            onClick={async () => {
-              try {
-                await fetch(
-                  `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${notif._id}/read`,
-                  { method: "PUT" }
-                );
-                setNotifications((prev) =>
-                  prev.map((n) =>
-                    n._id === notif._id ? { ...n, read: true } : n
-                  )
-                );
-              } catch (error) {
-                console.error("Failed to mark notification as read", error);
-              }
-            }}            
-          >
-            <strong>{notif.message}</strong>
-            <p>{notif?.task?.title || ""}</p>
-            <span>{new Date(notif.createdAt).toLocaleTimeString()}</span>
-          </div>
-                ))
-              )}
+              <div className="notifList">
+                {filteredNotifications.length === 0 ? (
+                  <div className="notifItem">No notifications</div>
+                ) : (
+                  filteredNotifications.slice(0, 5).map((notif) => (
+                    <div
+                      className={`notifItem ${notif.read ? "read" : "unread"}`}
+                      key={notif._id}
+                      onClick={async () => {
+                        try {
+                          await fetch(
+                            `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${notif._id}/read`,
+                            { method: "PUT" }
+                          );
+                          setNotifications((prev) =>
+                            prev.map((n) =>
+                              n._id === notif._id ? { ...n, read: true } : n
+                            )
+                          );
+                        } catch (error) {
+                          console.error("Failed to mark notification as read", error);
+                        }
+                      }}
+                    >
+                      <strong>{notif.message}</strong>
+                      <p>{notif?.task?.title || ""}</p>
+                      <span>{new Date(notif.createdAt).toLocaleTimeString()}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <Link href="/notifications">
+                <button className="viewAll">View all notifications</button>
+              </Link>
             </div>
-
-            <Link href="/notifications">
-              <button className="viewAll">View all notifications</button>
-            </Link>
-          </div>
-        )}
+          )}
         </div>
 
         <div className="avatar" onClick={() => {
           setShowProfile(!showProfile);
           setShowNotifications(false);
         }}>
-          {user ? user.name.substring(0, 2).toUpperCase() : "??"}
+          {user ? user.name.substring(0, 1).toUpperCase() : "??"}
           {showProfile && (
             <div className="profileDropdown">
               <div>

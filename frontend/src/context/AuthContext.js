@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useEffect, useState, createContext, useContext } from "react";
+import { auth } from "../lib/firebase";  // Assuming Firebase is configured
+import { signOut } from "firebase/auth";
 
 const AuthContext = createContext();
 
@@ -7,19 +9,42 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [tasks, setTasks] = useState([]);
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      if (firebaseUser) {
+        setUser({
+          name: firebaseUser.displayName || "No Name",
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+        });
+        setIsAuthenticated(true);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
+    });
+
+    return () => unsubscribe(); // Clean up the listener
+  }, []);
+
   const login = (username, uid) => {
     setUser({ name: username, uid });
     setIsAuthenticated(true);
-  };  
+  };
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    setTasks([]);
+  const logout = async () => {
+    try {
+      await signOut(auth); // 🔴 LOG OUT from Firebase
+      setUser(null);
+      setIsAuthenticated(false);
+      setTasks([]);
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   const addTask = (task) => {
-    setTasks(prevTasks => [...prevTasks, task]);
+    setTasks((prevTasks) => [...prevTasks, task]);
   };
 
   return (

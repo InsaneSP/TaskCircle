@@ -14,5 +14,23 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.put('/update', async (req, res) => {
+  const { uid, name, about, phone } = req.body;
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { uid },
+      { name, about, phone },
+      { new: true }
+    );
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Update failed", error: err.message });
+  }
+});
+
 
 module.exports = router;
